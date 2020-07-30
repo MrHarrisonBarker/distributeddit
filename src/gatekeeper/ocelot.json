@@ -1,0 +1,205 @@
+{
+  "Routes": [
+    //    KeyMaster
+
+    {
+      "DownstreamPathTemplate": "/api/auth",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "keymaster",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/auth",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post"
+      ],
+      "SwaggerKey": "keymaster"
+    },
+    //    PostService
+
+    {
+      "DownstreamPathTemplate": "/api/post",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "postservice",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/post",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Delete",
+        "Put"
+      ],
+      "SwaggerKey": "post"
+    },
+    {
+      "DownstreamPathTemplate": "/api/post/user",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "postservice",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/post/user",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "SwaggerKey": "post"
+    },
+    {
+      "DownstreamPathTemplate": "/api/post/all",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "postservice",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/post/all",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "SwaggerKey": "post"
+    },
+    
+    //    UserService
+
+    {
+      "DownstreamPathTemplate": "/api/user",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "userservice",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/user",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Delete",
+        "Put"
+      ],
+      "SwaggerKey": "user"
+    },
+    {
+      "DownstreamPathTemplate": "/api/user/all",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "userservice",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/user/all",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "SwaggerKey": "user"
+    },
+    
+//    AnalyticsService
+
+    {
+      "DownstreamPathTemplate": "/api/authevent",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "analyticsservice",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/analytics/auth",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "SwaggerKey": "analytics"
+    },
+    {
+      "DownstreamPathTemplate": "/api/postevent",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "analyticsservice",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/analytics/post",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "SwaggerKey": "analytics"
+    },
+    {
+      "DownstreamPathTemplate": "/api/userevent",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "analyticsservice",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/analytics/user",
+      "UpstreamHttpMethod": [
+        "Get"
+      ],
+      "SwaggerKey": "analytics"
+    }
+  ],
+  "SwaggerEndPoints": [
+    {
+      "Key": "user",
+      "Config": [
+        {
+          "Name": "User API",
+          "Version": "v1",
+          "Url": "http://userservice:80/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "post",
+      "Config": [
+        {
+          "Name": "Post API",
+          "Version": "v1",
+          "Url": "http://postservice:80/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "keymaster",
+      "Config": [
+        {
+          "Name": "KeyMaster API",
+          "Version": "v1",
+          "Url": "http://keymaster:80/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "analytics",
+      "Config": [
+        {
+          "Name": "Analytics API",
+          "Version": "v1",
+          "Url": "http://analyticsservice:80/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "ServiceDiscoveryProvider": {
+      "Host": "consul",
+      "Port": 8500,
+      "PollingInterval": 5000
+    }
+  }
+}

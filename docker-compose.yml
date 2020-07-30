@@ -1,0 +1,53 @@
+version: '3.4'
+
+services:
+
+  seq: 
+    image: ${DOCKER_REGISTRY-}datalust/seq
+
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2019-CU5-ubuntu-18.04
+    
+  analyticsdb:
+    image: mongo
+    
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+
+  analytics.service:
+    image: ${DOCKER_REGISTRY-}analyticsservice
+    build:
+      context: .
+      dockerfile: src/AnalyticsService/Dockerfile
+  
+  key.master:
+    image: ${DOCKER_REGISTRY-}keymaster
+    build:
+      context: .
+      dockerfile: src/KeyMaster/Dockerfile
+  
+  post.service:
+    image: ${DOCKER_REGISTRY-}postservice
+    build:
+      context: .
+      dockerfile: src/PostService/Dockerfile
+      
+  user.service:
+    image: ${DOCKER_REGISTRY-}userservice
+    build:
+      context: .
+      dockerfile: src/UserService/Dockerfile
+
+  gate.keeper:
+    image: ${DOCKER_REGISTRY-}gatekeeper
+    build:
+      context: .
+      dockerfile: src/gatekeeper/Dockerfile
+      
+  consul:
+    image: ${DOCKER_REGISTRY-}consul
+    hostname: consul
+    container_name: consul
+
+#    "agent -server -bootstrap -ui -client=0.0.0.0 -bind='{{ GetInterfaceIP \"eth0\" }}'"
+#    consul agent -dev -log-level=warn -ui -client=0.0.0.0

@@ -1,0 +1,4 @@
+Build and start: docker-compose -f docker-compose.yml -f docker-compose.override.yml up --build
+start: docker-compose -f docker-compose.yml -f docker-compose.override.yml up
+
+start in background: docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d

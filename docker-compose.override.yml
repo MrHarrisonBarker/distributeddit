@@ -1,0 +1,112 @@
+version: '3.4'
+
+services:
+
+  seq:
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5341:80"
+    volumes:
+      - ./data:/data
+
+  sqldata:
+    environment:
+      - SA_PASSWORD=Pass@word
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+
+  analyticsdb:
+    container_name: analyticsdb
+    restart: always
+    volumes:
+      - ${WEBAPP_STORAGE_HOME}/site:/data/db
+      #- ./data:/data/db
+    ports:
+      - "27017:27017"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+    container_name: rabbitmq
+
+  analytics.service:
+    container_name: analyticsservice
+    ports:
+      - "8003:80"
+
+  key.master:
+    container_name: keymaster
+    restart: on-failure
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ServiceConfig__serviceDiscoveryAddress=http://consul:8500
+      - ServiceConfig__serviceAddress=http://keymaster:80 
+      - ServiceConfig__serviceName=keymaster
+      - ServiceConfig__serviceId=keymaster-v1
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
+      - ${HOME}/.aspnet/https:/root/.aspnet/https/
+    ports:
+      - "8888:80"
+  
+  post.service:
+    container_name: postservice
+    restart: on-failure
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ServiceConfig__serviceDiscoveryAddress=http://consul:8500
+      - ServiceConfig__serviceAddress=http://post:80
+      - ServiceConfig__serviceName=orders
+      - ServiceConfig__serviceId=orders-v1
+      - ConnectionString=Server=sqldata;Database=postDb;User=sa;Password=Pass@word
+    depends_on:
+      - rabbitmq
+      - key.master
+      - sqldata
+    volumes:
+      - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
+      - ${HOME}/.aspnet/https:/root/.aspnet/https/
+    ports:
+        - "8000:80"
+
+  user.service:
+    container_name: userservice
+    restart: on-failure
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ServiceConfig__serviceDiscoveryAddress=http://consul:8500
+      - ServiceConfig__serviceAddress=http://user:80
+      - ServiceConfig__serviceName=user
+      - ServiceConfig__serviceId=user-v1
+      - ConnectionString=Server=sqldata;Database=userDb;User=sa;Password=Pass@word
+    depends_on:
+      - rabbitmq
+      - key.master
+      - sqldata
+    volumes:
+      - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
+      - ${HOME}/.aspnet/https:/root/.aspnet/https/
+    ports:
+      - "8001:80"
+
+  gate.keeper:
+    container_name: gatekeeper
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - post.service
+      - key.master
+    volumes:
+      - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
+      - ${HOME}/.aspnet/https:/root/.aspnet/https/
+    ports:
+      - "7000:80"
+
+  consul:
+    ports:
+      - "8500:8500"
